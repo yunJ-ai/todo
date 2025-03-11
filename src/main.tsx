@@ -5,14 +5,18 @@ import App from "./App";
 
 import "./index.css";
 
-if (process.env.NODE_ENV === "development") {
-  import("./mocks/browser").then(({ worker }) => {
-    worker.start();
-  });
+async function enableMocking() {
+  if (process.env.NODE_ENV !== "development") {
+    return;
+  }
+  const { worker } = await import("./mocks/browser");
+  return worker.start();
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
+enableMocking().then(() =>
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  )
 );

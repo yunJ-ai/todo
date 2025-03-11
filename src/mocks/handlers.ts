@@ -8,7 +8,13 @@ interface Todo {
 }
 
 // 메모리 내에 Todo 목록을 관리하기 위한 Map
-const todos = new Map<string, Todo>();
+const todos = new Map<string, Todo>([
+  ["1", { id: "1", text: "Learn Vite", completed: false }],
+  ["2", { id: "2", text: "Set up MSW", completed: false }],
+  ["3", { id: "3", text: "Build a Todo App", completed: true }],
+  ["4", { id: "4", text: "Practice Tailwind CSS", completed: false }],
+  ["5", { id: "5", text: "Deploy the app", completed: false }],
+]);
 
 export const handlers = [
   // GET /todos - 모든 Todo 목록 반환
