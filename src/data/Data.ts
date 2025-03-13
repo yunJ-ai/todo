@@ -1,4 +1,8 @@
-import { Todo } from "../types/todo";
+export interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+}
 
 export const dummyTodoList: Todo[] = [
   {
@@ -14,7 +18,7 @@ export const dummyTodoList: Todo[] = [
   {
     id: "3",
     text: "Build a Todo App",
-    completed: true,
+    completed: false,
   },
   {
     id: "4",

@@ -3,6 +3,7 @@ interface SearchProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+// 엔터 클릭 시, 입력가능하게 추후 변경 onKeyDown={handleKeyDown}
 export default function Search({ value, onChange }: SearchProps) {
   return (
     <input

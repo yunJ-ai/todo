@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { dummyTodoList } from "../data/Data";
 import { TodoList } from "../components/TodoList";
 import Search from "../components/Search";
-import Buttons from "../components/Buttons";
+import Button from "../components/Button";
 import Calendar from "../components/Calendar";
-import Inputs from "../components/Inputs";
+import Inputs from "../components/Input";
 
 function TodoPage() {
   const [todoList, setTodoList] = useState(dummyTodoList);
   const [searchText, setSearchText] = useState("");
+  const [inputText, setInputText] = useState("");
 
   // /todos 엔드포인트로부터 데이터를 가져와 상태를 업데이트
   useEffect(() => {
@@ -24,7 +25,7 @@ function TodoPage() {
   }, []);
 
   // API를 통해 새로운 TODO 항목을 추가하는 함수
-  const handleAddTodo = async (text: string) => {
+  const addTodo = async (text: string) => {
     try {
       const response = await fetch("/todos", {
         method: "POST",
@@ -61,6 +62,7 @@ function TodoPage() {
           <Calendar />
         </div>
         <div className="w-2/3 p-2 flex flex-col">
+          <p className="py-2">오늘의 투두</p>
           <div className="flex items-center py-2">
             <Search
               value={searchText}
@@ -68,8 +70,11 @@ function TodoPage() {
             />
           </div>
           <div className="flex items-center">
-            <Inputs />
-            <Buttons action="add" addTodo={handleAddTodo} />
+            <Inputs
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+            />
+            <Button onClick={() => addTodo(inputText)} label="추가" />
           </div>
           <div className="mt-4">
             <TodoList todoList={todoList} changeCompleted={changeCompleted} />
