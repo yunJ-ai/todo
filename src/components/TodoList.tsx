@@ -1,43 +1,96 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 import { Todo } from "../data/Data";
-import { faEdit, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEdit,
+  faCheck,
+  faTrashCan,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   todoList: Todo[];
   changeCompleted: (id: string) => void;
   deleteTodo: (id: string) => Promise<void>;
+  updateTodo: (id: string, nextText: string) => Promise<void>;
 };
 
-export const TodoList = ({ todoList, changeCompleted, deleteTodo }: Props) => {
+export const TodoList = ({
+  todoList,
+  changeCompleted,
+  deleteTodo,
+  updateTodo,
+}: Props) => {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+
   return (
     <div>
       {todoList.map((todo) => (
-        <p key={todo.id} className="flex items-center gap-3">
-          <label className="flex items-center gap-2">
+        <div key={todo.id} className="flex items-center gap-3 p-2">
+          <label className="flex items-center gap-2 w-full">
             <input
               type="checkbox"
               className="w-5 h-5"
               checked={todo.completed}
               onChange={() => changeCompleted(String(todo.id))}
             />
-            <span className={todo.completed ? "text-red-300 line-through" : ""}>
-              {todo.text}
-            </span>
+
+            {editingId === todo.id ? (
+              <input
+                type="text"
+                className="px-2 py-1 w-full border border-gray-300 rounded-sm"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+              />
+            ) : (
+              <span
+                className={todo.completed ? "text-red-500 line-through" : ""}
+              >
+                {todo.text}
+              </span>
+            )}
           </label>
-          <div className="">
-            {/* 버튼 클릭 시, 내용 수정 */}
-            <button className="hover:bg-primary-500 px-2 py-2 rounded-sm">
-              <FontAwesomeIcon icon={faEdit} />
-            </button>
-            {/* 버튼 클릭 시, 삭제 */}
+
+          <div className="flex gap-2">
+            {editingId === todo.id ? (
+              <>
+                <button
+                  onClick={async () => {
+                    await updateTodo(String(todo.id), editText);
+                    setEditingId(null);
+                  }}
+                  className="hover:bg-primary-500 px-2 py-1 rounded-sm"
+                >
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+                <button
+                  onClick={() => setEditingId(null)}
+                  className="hover:bg-red-500 px-2 py-1 rounded-sm"
+                >
+                  <FontAwesomeIcon icon={faXmark} />
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  setEditingId(String(todo.id));
+                  setEditText(todo.text);
+                }}
+                className="px-2 py-1 rounded-sm hover:bg-amber-500"
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </button>
+            )}
+
             <button
               onClick={() => deleteTodo(String(todo.id))}
-              className="hover:bg-red-500 px-2 py-2 rounded-sm"
+              className="px-2 py-1 rounded-sm hover:bg-red-500"
             >
               <FontAwesomeIcon icon={faTrashCan} />
             </button>
           </div>
-        </p>
+        </div>
       ))}
     </div>
   );
