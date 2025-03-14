@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { dummyTodoList } from "../data/Data";
 import { TodoList } from "../components/TodoList";
 import Search from "../components/Search";
 import Button from "../components/Button";
-import Calendar from "../components/Calendar";
 import Inputs from "../components/Input";
 
 function TodoPage() {
@@ -11,7 +10,7 @@ function TodoPage() {
   const [searchText, setSearchText] = useState("");
   const [inputText, setInputText] = useState("");
 
-  // /todos 엔드포인트로부터 데이터를 가져와 상태를 업데이트
+  // /todos 할 일 목록 불러오기기
   useEffect(() => {
     fetch("/todos")
       .then((res) => res.json())
@@ -24,7 +23,7 @@ function TodoPage() {
       );
   }, []);
 
-  // API를 통해 새로운 TODO 항목을 추가하는 함수
+  // 할 일 추가(addTodo)
   const addTodo = async (text: string) => {
     try {
       const response = await fetch("/todos", {
@@ -44,6 +43,7 @@ function TodoPage() {
     }
   };
 
+  // 할 일 완료 상태 변경
   const changeCompleted = (id: number) => {
     setTodoList((prevTodoList) =>
       prevTodoList.map((todo) =>
@@ -54,31 +54,43 @@ function TodoPage() {
     );
   };
 
+  // 할 일 수정
+
+  // 검색 기능
+  const filteredTodoList = todoList.filter((todo) =>
+    todo.text.toLowerCase().includes(searchText.toLowerCase())
+  );
+
   return (
-    <div className="py-4 px-2">
-      <h3>list</h3>
-      <div className="bg-gray-850 rounded-sm flex text-white">
-        <div className="w-1/3 p-2">
-          <Calendar />
+    <div className="bg-gray-850 rounded-sm flex text-white py-4 px-2 w-screen h-screen">
+      {/* <div className="w-1/3 p-2">
+        <Calendar />
+      </div> */}
+      {/* TODO : 오늘의 투두 옆에 SEARCH | TodoList 목록, Search 목록 모두 묶어주기(둥근네모로-게시판 느낌) | 검색하면 해당 부분 밑에 나오기기 */}
+      <div className="w-2/3 p-2">
+        <p className="py-2">오늘의 투두</p>
+        <div className="flex items-center py-2">
+          <Search
+            value={searchText} // 현재 검색어 상태 반영
+            onChange={(e) => setSearchText(e.target.value)}
+          />
         </div>
-        <div className="w-2/3 p-2 flex flex-col">
-          <p className="py-2">오늘의 투두</p>
-          <div className="flex items-center py-2">
-            <Search
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+        <div className="items-center">
+          <Inputs
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+          />
+          <Button onClick={() => addTodo(inputText)} label="추가" />
+        </div>
+        <div className="mt-4">
+          {filteredTodoList.length === 0 ? (
+            "검색된 결과가 없습니다"
+          ) : (
+            <TodoList
+              todoList={filteredTodoList}
+              changeCompleted={changeCompleted}
             />
-          </div>
-          <div className="flex items-center">
-            <Inputs
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-            />
-            <Button onClick={() => addTodo(inputText)} label="추가" />
-          </div>
-          <div className="mt-4">
-            <TodoList todoList={todoList} changeCompleted={changeCompleted} />
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -86,3 +98,6 @@ function TodoPage() {
 }
 
 export default TodoPage;
+
+// 1. 입력한 것 수정 가능과 수정된 채로 저장
+// 2. 완료한 것은 수정 불가능

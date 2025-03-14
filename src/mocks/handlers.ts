@@ -11,7 +11,7 @@ interface Todo {
 const todos = new Map<string, Todo>([
   ["1", { id: "1", text: "Learn Vite", completed: false }],
   ["2", { id: "2", text: "Set up MSW", completed: false }],
-  ["3", { id: "3", text: "Build a Todo App", completed: true }],
+  ["3", { id: "3", text: "Build a Todo App", completed: false }],
   ["4", { id: "4", text: "Practice Tailwind CSS", completed: false }],
   ["5", { id: "5", text: "Deploy the app", completed: false }],
 ]);

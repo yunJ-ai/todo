@@ -1,4 +1,6 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Todo } from "../data/Data";
+import { faEdit, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   todoList: Todo[];
@@ -21,6 +23,16 @@ export const TodoList = ({ todoList, changeCompleted }: Props) => {
               {todo.text}
             </span>
           </label>
+          <div className="">
+            {/* 버튼 클릭 시, 내용 수정 */}
+            <button className="hover:bg-primary-400 px-2 py-2 rounded-sm">
+              <FontAwesomeIcon icon={faEdit} />
+            </button>
+            {/* 버튼 클릭 시, 삭제 */}
+            <button className="hover:bg-primary-400 px-2 py-2 rounded-sm">
+              <FontAwesomeIcon icon={faTrashCan} />
+            </button>
+          </div>
         </p>
       ))}
     </div>
