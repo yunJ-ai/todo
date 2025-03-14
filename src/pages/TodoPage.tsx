@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { dummyTodoList } from "../data/Data";
 import { TodoList } from "../components/TodoList";
 import Search from "../components/Search";
@@ -44,22 +44,49 @@ function TodoPage() {
   };
 
   // 할 일 완료 상태 변경
-  const changeCompleted = (id: number) => {
+  const changeCompleted = (id: string) => {
     setTodoList((prevTodoList) =>
       prevTodoList.map((todo) =>
-        todo.id === id.toString()
-          ? { ...todo, completed: !todo.completed }
-          : todo
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
   };
 
-  // 할 일 수정
+  // 해야할 일, 완료한 일 계산
+  const totalTodos = todoList.length;
+  const completeTodos = useMemo(
+    () => todoList.filter((todo) => todo.completed).length,
+    [todoList]
+  );
+  const remainTodos = useMemo(
+    () => totalTodos - completeTodos,
+    [totalTodos, completeTodos]
+  );
 
   // 검색 기능
   const filteredTodoList = todoList.filter((todo) =>
     todo.text.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  // 할 일 수정
+
+  // 할 일 삭제
+  const deleteTodo = async (id: string) => {
+    try {
+      const response = await fetch(`/todos/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("삭제 실패");
+      }
+      setTodoList((prevTodoList) =>
+        prevTodoList.filter((todo) => String(todo.id) !== id)
+      );
+    } catch (error) {
+      console.error("DELETE 요청 실패:", error);
+    }
+  };
 
   return (
     <div className="bg-gray-850 rounded-sm flex text-white py-4 px-2 w-screen h-screen">
@@ -68,7 +95,7 @@ function TodoPage() {
       </div> */}
       {/* TODO : 오늘의 투두 옆에 SEARCH | TodoList 목록, Search 목록 모두 묶어주기(둥근네모로-게시판 느낌) | 검색하면 해당 부분 밑에 나오기기 */}
       <div className="w-2/3 p-2">
-        <p className="py-2">오늘의 투두</p>
+        <p className="py-2">전체 투두 (총 : {totalTodos})</p>
         <div className="flex items-center py-2">
           <Search
             value={searchText} // 현재 검색어 상태 반영
@@ -76,6 +103,9 @@ function TodoPage() {
           />
         </div>
         <div className="items-center">
+          <p className="py-2">
+            해야하는 투두 ({remainTodos} / 완료 : {completeTodos})
+          </p>
           <Inputs
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -89,6 +119,7 @@ function TodoPage() {
             <TodoList
               todoList={filteredTodoList}
               changeCompleted={changeCompleted}
+              deleteTodo={deleteTodo}
             />
           )}
         </div>
@@ -98,6 +129,3 @@ function TodoPage() {
 }
 
 export default TodoPage;
-
-// 1. 입력한 것 수정 가능과 수정된 채로 저장
-// 2. 완료한 것은 수정 불가능
