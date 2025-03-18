@@ -1,6 +1,7 @@
 interface ChipsProps {
   onClick: () => void;
   label: string;
+  active: boolean;
 }
 
 const Chip: React.FC<ChipsProps> = ({ onClick, label }) => {
