@@ -101,23 +101,32 @@ function TodoPage() {
 
   // 필터링 함수
   const filterTodos = (type: string) => {
-    setFilterType(type);
+    let filteredList = todoList;
 
     if (type === "all") {
-      setFilteredTodoList(todoList);
+      filteredList = todoList;
     } else if (type === "incomplete") {
-      setFilteredTodoList(todoList.filter((todo) => !todo.completed));
+      filteredList = todoList.filter((todo) => !todo.completed);
     } else if (type === "completed") {
-      setFilteredTodoList(todoList.filter((todo) => todo.completed));
+      filteredList = todoList.filter((todo) => todo.completed);
     }
+
+    // 검색 기능
+    if (searchText.trim() !== "") {
+      filteredList = filteredList.filter((todo) =>
+        todo.text.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    setFilteredTodoList(filteredList);
   };
 
   // todoList가 변경될 때 필터링 유지
   useEffect(() => {
     filterTodos(filterType);
-  }, [todoList]);
+  }, [todoList, filterType, searchText]);
 
-  //개수
+  // todo 목록 개수 측정
   const incomplete = todoList.filter((todo) => !todo.completed).length;
   const complete = todoList.filter((todo) => todo.completed).length;
 
@@ -152,18 +161,18 @@ function TodoPage() {
           {/* 필터 버튼 */}
           <div className="mt-4">
             <Chip
-              onClick={() => filterTodos("all")}
               label="전체"
+              onClick={() => setFilterType("all")}
               active={filterType === "all"}
             />
             <Chip
-              onClick={() => filterTodos("incomplete")}
               label="미완료"
+              onClick={() => setFilterType("incomplete")}
               active={filterType === "incomplete"}
             />
             <Chip
-              onClick={() => filterTodos("completed")}
               label="완료"
+              onClick={() => setFilterType("completed")}
               active={filterType === "completed"}
             />
           </div>

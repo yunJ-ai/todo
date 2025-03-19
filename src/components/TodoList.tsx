@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Todo } from "../data/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -7,6 +6,12 @@ import {
   faTrashCan,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+
+interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+}
 
 type Props = {
   todoList: Todo[];
@@ -25,17 +30,19 @@ export const TodoList = ({
   const [editText, setEditText] = useState("");
 
   return (
+    // todolist 랜더링
     <div>
       {todoList.map((todo) => (
         <div key={todo.id} className="flex items-center gap-3 p-2">
           <label className="flex items-center gap-2 w-full">
-            <input
+            <input // todolist 완료 표시
               type="checkbox"
               className="w-5 h-5"
               checked={todo.completed}
               onChange={() => changeCompleted(String(todo.id))}
             />
 
+            {/* 편집 가능한지 확인 */}
             {editingId === todo.id ? (
               <input
                 type="text"
@@ -52,6 +59,7 @@ export const TodoList = ({
             )}
           </label>
 
+          {/* 버튼 (수정, 삭제, 수정 확인 및 취소) */}
           <div className="flex gap-2">
             {editingId === todo.id ? (
               <>
